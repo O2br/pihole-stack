@@ -22,6 +22,12 @@
 ```sh
 git clone https://github.com/marcelobaptista/pihole-stack.git && cd pihole-stack
 ```
+
+## No arquivo *docker-compose.yml* editar a seguinte linha caso esteja usando plataforma ARM
+```sh
+ onedr0p/pihole-exporter:v1.0.0 por ekofr/pihole-exporter
+```
+
 ### Editar a variável ROOT no arquivo .env para o caminho desejado
 ```sh 
 nano .env
