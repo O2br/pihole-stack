@@ -1,0 +1,112 @@
+version: "3.4"
+
+volumes:
+    grafana-data: {}
+
+networks:
+  default:
+    external:
+      name: pihole-network
+
+services:
+
+  pihole:
+    container_name: pihole
+    hostname: pihole
+    image: pihole/pihole:latest
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "67:67/udp"
+      - "80:80/tcp"
+    env_file:
+      - ./pihole.env
+      - ./.env
+    volumes:
+      - '${ROOT}/pihole/:/etc/pihole/'
+      - '${ROOT}/pihole/dnsmasq.d/:/etc/dnsmasq.d/'
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+    networks:
+      default:
+
+  prometheus:
+    container_name: prometheus
+    hostname: prometheus
+    image: prom/prometheus
+    ports:
+      - 9090:9090
+    links:
+      -alertmanager:alertmanager
+    env_file:
+      - ./.env  
+    volumes:
+      - ${ROOT}/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    restart: always
+    networks:
+      default:
+
+  node-exporter:
+    container_name: node-exporter
+    hostname: node-exporter
+    image: prom/node-exporter
+    ports:
+      - 9100:9100
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command: 
+      - '--path.procfs=/host/proc' 
+      - '--path.sysfs=/host/sys'
+      - --collector.filesystem.ignored-mount-points
+      - "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"
+    restart: always
+    deploy:
+      mode: global
+    networks:
+      default:
+
+  pihole-exporter:
+    container_name: pihole-exporter
+    hostname: pihole-exporter
+    image: onedr0p/pihole-exporter:v1.0.0 # para plataforma ARM. Para amd64 usar a imagem ekofr/pihole-exporter
+    ports:
+      - 9617:9617
+    env_file:
+      - ./pihole-exporter.env
+    restart: always
+    networks:
+      default:
+
+  grafana:
+    container_name: grafana
+    hostname: grafana
+    image: grafana/grafana
+    ports:
+      - 3000:3000
+    depends_on:
+      - prometheus
+    volumes:
+      - grafana-data:/var/lib/grafana
+    env_file:
+      - ./grafana.env
+      - ./.env
+    restart: always
+    networks:
+      default:
+
+  alertmanager:
+    container_name: alertmanager
+    hostname: alertmanager
+    image: prom/alertmanager
+    volumes:
+      - ${ROOT}/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+    env_file:
+      - ./.env  
+    ports:
+      - 9093:9093
+    restart: always
+    networks:
+      default:
