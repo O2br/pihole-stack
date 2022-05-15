@@ -104,7 +104,7 @@ services:
     volumes:
       - ${ROOT}/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
     env_file:
-      - ./.env  
+      - ./pihole-stack.env  
     ports:
       - 9093:9093
     restart: always
