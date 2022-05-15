@@ -37,8 +37,6 @@ services:
     image: prom/prometheus
     ports:
       - 9090:9090
-    links:
-      -alertmanager:alertmanager
     env_file:
       - ./pihole-stack.env  
     volumes:
@@ -63,9 +61,7 @@ services:
       - --collector.filesystem.ignored-mount-points
       - "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"
     restart: always
-    deploy:
-      mode: global
-    networks:
+     networks:
       default:
 
   pihole-exporter:
