@@ -21,7 +21,7 @@ services:
       - "80:80/tcp"
     env_file:
       - ./pihole.env
-      - ./.env
+      - ./pihole-stack.env
     volumes:
       - '${ROOT}/pihole/:/etc/pihole/'
       - '${ROOT}/pihole/dnsmasq.d/:/etc/dnsmasq.d/'
@@ -40,7 +40,7 @@ services:
     links:
       -alertmanager:alertmanager
     env_file:
-      - ./.env  
+      - ./pihole-stack.env  
     volumes:
       - ${ROOT}/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     restart: always
@@ -92,7 +92,7 @@ services:
       - grafana-data:/var/lib/grafana
     env_file:
       - ./grafana.env
-      - ./.env
+      - ./pihole-stack.env
     restart: always
     networks:
       default:
