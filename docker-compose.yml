@@ -38,7 +38,7 @@ services:
     ports:
       - 9090:9090
     env_file:
-      - ./pihole-stack.env  
+      - ./.env 
     volumes:
       - ${ROOT}/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     restart: always
@@ -61,7 +61,7 @@ services:
       - --collector.filesystem.ignored-mount-points
       - "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"
     restart: always
-     networks:
+    networks:
       default:
 
   pihole-exporter:
@@ -100,7 +100,7 @@ services:
     volumes:
       - ${ROOT}/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
     env_file:
-      - ./pihole-stack.env  
+      - ./.env 
     ports:
       - 9093:9093
     restart: always
